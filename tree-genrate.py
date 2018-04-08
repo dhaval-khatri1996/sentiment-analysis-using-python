@@ -11,6 +11,8 @@ words.append(Node(2,"Apple","Conjunction"))
 words.append(Node(2,"Apple","Others"))
 words.append(Node(2,"Apple","Conjunction"))
 
+#ABOVE IS JUST FOR TESTING PURPOSE. LATER THE LIST WILL BE IMPORTED FROM THE NLTK.
+
                 #######################
                #  * * * * * * * * * *  #
               #  *  TREE GENERATION  *  #
