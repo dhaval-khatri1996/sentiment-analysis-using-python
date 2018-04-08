@@ -1,30 +1,57 @@
-lst=[1,2,2,3,2,1,0,0,1,1,2,-3,2,1]
-prev=99999
+class Node(object):
+    def __init__(self, polarity=None, word=None, tag=None):
+        self.polarity=polarity
+        self.word=word
+        self.tag=tag
+
+words=[]
+words.append(Node(2,"Apple","Noun"))
+words.append(Node(2,"Cashew","Pronoun"))
+words.append(Node(2,"Apple","Conjunction"))
+words.append(Node(2,"Apple","Others"))
+words.append(Node(2,"Apple","Conjunction"))
+
+                #######################
+               #  * * * * * * * * * *  #
+              #  *  TREE GENERATION  *  #
+               #  * * * * * * * * * *  #
+                #######################
+
+n=len(words)
 nodes={1:[2]}
-data={1:[]}
-current,nodc=1,1
+data={}
+nodes[2]=[3]
+data[3],prev,crNode,countN=words[0],words[0],2,3
 
-for nmbr in lst:
-    if nmbr==3:
-        nodc+=1
-        nodes[1].append(nodc)
-        current=nodc
-        data[nodc]=[3]
-        prev=3
+for node in words[1:n]:
+    if prev.tag==node.tag:
+        countN+=1
+        nodes[crNode].append(countN)
+        data[countN]=node
 
-    elif nmbr==prev:
-        data[current].append(nmbr)
-
+    elif node.tag=='Conjunction':
+        nodes[1].append(countN+1)
+        nodes[countN+1]=[countN+2]
+        data[countN+2]=node
+        crNode=countN+1
+        countN+=2
+           
     else:
-        prev=nmbr
-        nodc+=1
-        nodes[current]=[nodc]
-        current=nodc
-        nodes[nodc]=[]
-        data[current]=[prev]
-print('Nodes and Childs')
-for i in nodes:
-      print(i,' : ',nodes[i])
-print('Nodes and Data')
-for i in data:
-      print(i,' : ',data[i])
+        countN+=1
+        nodes[crNode].append(countN)
+        crNode=countN
+        nodes[crNode]=[]
+        countN+=1
+        nodes[crNode].append(countN)
+        data[countN]=node
+
+
+                #######################
+               #  * * * * * * * * * *  #
+              #  *  TREE EVALUATION  *  #
+               #  * * * * * * * * * *  #
+                #######################
+
+
+
+
