@@ -11,7 +11,24 @@ words.append(Node(2,"Apple","Conjunction"))
 words.append(Node(2,"Apple","Others"))
 words.append(Node(2,"Apple","Conjunction"))
 
-#ABOVE IS JUST FOR TESTING PURPOSE. LATER THE LIST WILL BE IMPORTED FROM THE NLTK.
+    
+                #######################
+               #  * * * * * * * * * *  #
+              #  *  TREE EVALUATION  *  #
+               #  * * * * * * * * * *  #
+                #######################
+
+
+def evalTree(nodes, data, x, polaritty):
+    if x in data:
+        polaritty+=data[x].polarity
+    else:
+        sm=0
+        for i in nodes[x]:
+            sm+=evalTree(nodes, data, i, 0)
+        polaritty+=(sm/len(nodes[x]))
+    return  polaritty
+
 
                 #######################
                #  * * * * * * * * * *  #
@@ -19,6 +36,7 @@ words.append(Node(2,"Apple","Conjunction"))
                #  * * * * * * * * * *  #
                 #######################
 
+                
 n=len(words)
 nodes={1:[2]}
 data={}
@@ -47,13 +65,4 @@ for node in words[1:n]:
         nodes[crNode].append(countN)
         data[countN]=node
 
-
-                #######################
-               #  * * * * * * * * * *  #
-              #  *  TREE EVALUATION  *  #
-               #  * * * * * * * * * *  #
-                #######################
-
-
-
-
+print(evalTree(nodes, data, 1, 0))
