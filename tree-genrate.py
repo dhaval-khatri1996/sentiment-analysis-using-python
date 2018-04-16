@@ -1,42 +1,92 @@
+        ### Sentiment Analysis in Python ###
+'''
+                    Saurabh  Yadav
+                                                '''
+                      
 class Node(object):
     def __init__(self, polarity=None, word=None, tag=None):
-        self.polarity=polarity
-        self.word=word
-        self.tag=tag
-
+        self.polarity, self.word, self.tag=polarity, word, tag
+        
 words=[]
-words.append(Node(2,"Apple","Noun"))
-words.append(Node(2,"Cashew","Pronoun"))
-words.append(Node(2,"Apple","Conjunction"))
-words.append(Node(2,"Apple","Others"))
-words.append(Node(2,"Apple","Conjunction"))
+words.append(Node(0,"I","DET"))
+words.append(Node(-10,"don't","VER"))
+words.append(Node(8,"like","VER"))
+words.append(Node(0,"you","ADV"))
 
-    
-                #######################
-               #  * * * * * * * * * *  #
-              #  *  TREE EVALUATION  *  #
-               #  * * * * * * * * * *  #
-                #######################
-
-
-def evalTree(nodes, data, x, polaritty):
-    if x in data:
-        polaritty+=data[x].polarity
+def sign(p):
+    if p>=0:
+        return 1
     else:
-        sm=0
-        for i in nodes[x]:
-            sm+=evalTree(nodes, data, i, 0)
-        polaritty+=(sm/len(nodes[x]))
-    return  polaritty
+        return -1
+
+                                    #Evaluation for Adverb or Determinant and Noun/Adj
+def evalADV(polarity, oldP):
+    if polarity==0:
+        return oldP
+    elif polarity<0:
+        return polarity + abs(oldP)
+    else:
+        if polarity<5:
+            if oldP<0:
+                return polarity + oldP
+            else:
+                return polarity - oldP
+
+                                    #Evaluation for Verb
+def evalVERB(polarity, oldP):
+    return polarity + sign(polarity) * oldP
 
 
-                #######################
-               #  * * * * * * * * * *  #
-              #  *  TREE GENERATION  *  #
-               #  * * * * * * * * * *  #
-                #######################
 
+                                    #Evaluation of Whole Tree
+def evalTree(nodes, data, node):
+    if node in data:
+        return data[node].polarity
+    
+    else:
+        temp=nodes[node]
+        polarity,countP=0,0
+        
+        if temp[-1] in data:
+            for i in temp:
+                polarity+=data[i].polarity
+                if data[i].polarity !=0:
+                    countP+=1
+            if countP!=0:
+                polarity/=countP
+                                    #Evaluation for Dual Case
+        elif temp[0] in data:
+            n = len(temp)
+            for i in temp[0:n-1]:
+                polarity+=data[i].polarity
+                if data[i].polarity !=0:
+                    countP+=1
+            if countP!=0:
+                polarity/=countP
                 
+            x,y=temp[0],temp[-1]
+            oldP = evalTree(nodes, data, y)
+            if data[x].tag=='ADV':
+                return evalADV(polarity , oldP)
+
+            elif data[x].tag=='VER':
+                return evalVERB(polarity, oldP)
+
+            else:
+                return (polarity+oldP)/2
+
+            
+        else:
+            for i in temp:
+                x=evalTree(nodes, data, i)
+                polarity+=x
+                if x!=0:
+                    countP+=1
+            if countP!=0:
+                polarity/=countP
+    return polarity
+
+                        #Tree Generation
 n=len(words)
 nodes={1:[2]}
 data={}
@@ -49,7 +99,7 @@ for node in words[1:n]:
         nodes[crNode].append(countN)
         data[countN]=node
 
-    elif node.tag=='Conjunction':
+    elif node.tag=='CON':
         nodes[1].append(countN+1)
         nodes[countN+1]=[countN+2]
         data[countN+2]=node
@@ -64,5 +114,5 @@ for node in words[1:n]:
         countN+=1
         nodes[crNode].append(countN)
         data[countN]=node
-
-print(evalTree(nodes, data, 1, 0))
+    
+print(evalTree(nodes, data, 1))
