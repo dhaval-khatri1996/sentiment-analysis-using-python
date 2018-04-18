@@ -1,17 +1,4 @@
-        ### Sentiment Analysis in Python ###
-'''
-                    Saurabh  Yadav
-                                                '''
-                      
-class Node(object):
-    def __init__(self, polarity=None, word=None, tag=None):
-        self.polarity, self.word, self.tag=polarity, word, tag
-        
-words=[]
-words.append(Node(0,"I","DET"))
-words.append(Node(-10,"don't","VER"))
-words.append(Node(8,"like","VER"))
-words.append(Node(0,"you","ADV"))
+import word         
 
 def sign(p):
     if p>=0:
@@ -19,7 +6,7 @@ def sign(p):
     else:
         return -1
 
-                                    #Evaluation for Adverb or Determinant and Noun/Adj
+#Function to evaluate Adverb or a determinet followed by a Noun/Adjective
 def evalADV(polarity, oldP):
     if polarity==0:
         return oldP
@@ -32,7 +19,7 @@ def evalADV(polarity, oldP):
             else:
                 return polarity - oldP
 
-                                    #Evaluation for Verb
+#Function to evaluate Verb
 def evalVERB(polarity, oldP):
     return polarity + sign(polarity) * oldP
 
@@ -54,7 +41,8 @@ def evalTree(nodes, data, node):
                     countP+=1
             if countP!=0:
                 polarity/=countP
-                                    #Evaluation for Dual Case
+        
+        #Evaluation for Dual Case
         elif temp[0] in data:
             n = len(temp)
             for i in temp[0:n-1]:
@@ -74,8 +62,7 @@ def evalTree(nodes, data, node):
 
             else:
                 return (polarity+oldP)/2
-
-            
+    
         else:
             for i in temp:
                 x=evalTree(nodes, data, i)
@@ -86,33 +73,34 @@ def evalTree(nodes, data, node):
                 polarity/=countP
     return polarity
 
-                        #Tree Generation
-n=len(words)
-nodes={1:[2]}
-data={}
-nodes[2]=[3]
-data[3],prev,crNode,countN=words[0],words[0],2,3
+#Tree Generation
+def generateTree(words):
+    n=len(words)
+    nodes={1:[2]}
+    data={}
+    nodes[2]=[3]
+    data[3],prev,crNode,countN=words[0],words[0],2,3
 
-for node in words[1:n]:
-    if prev.tag==node.tag:
-        countN+=1
-        nodes[crNode].append(countN)
-        data[countN]=node
+    for node in words[1:n]:
+        if prev.tag==node.tag:
+            countN+=1
+            nodes[crNode].append(countN)
+            data[countN]=node
 
-    elif node.tag=='CON':
-        nodes[1].append(countN+1)
-        nodes[countN+1]=[countN+2]
-        data[countN+2]=node
-        crNode=countN+1
-        countN+=2
-           
-    else:
-        countN+=1
-        nodes[crNode].append(countN)
-        crNode=countN
-        nodes[crNode]=[]
-        countN+=1
-        nodes[crNode].append(countN)
-        data[countN]=node
-    
-print(evalTree(nodes, data, 1))
+        elif node.tag=='CON':
+            nodes[1].append(countN+1)
+            nodes[countN+1]=[countN+2]
+            data[countN+2]=node
+            crNode=countN+1
+            countN+=2
+            
+        else:
+            countN+=1
+            nodes[crNode].append(countN)
+            crNode=countN
+            nodes[crNode]=[]
+            countN+=1
+            nodes[crNode].append(countN)
+            data[countN]=node
+        
+    print(evalTree(nodes, data, 1))
