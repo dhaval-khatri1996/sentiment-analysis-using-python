@@ -1,93 +1,82 @@
-import word         
+import word
 
 def sign(p):
     if p>=0:
         return 1
-    else:
-        return -1
+    return -1
+    
+def calculate(data, lst):
+    polarity,count=0,0
+    for i in lst:
+        if i!=0:
+            polarity+=data[i].polarity
+            count+=1
+    if polarity==0:
+        return 0
+    return polarity/count
 
 #Function to evaluate Adverb or a determinet followed by a Noun/Adjective
-def evalADV(polarity, oldP):
-    if polarity==0:
+def evalAdv(polarity, oldP):
+    if polarity==0 or oldP==0:
         return oldP
     elif polarity<0:
-        return polarity + abs(oldP)
+        return sign(oldP) *(polarity + abs(oldP))
     else:
         if polarity<5:
             if oldP<0:
-                return polarity + oldP
+                return (5-polarity) + oldP
             else:
-                return polarity - oldP
+                return oldP - (5-polarity)
+        return oldP + sign(oldP)*(polarity-4)
 
 #Function to evaluate Verb
-def evalVERB(polarity, oldP):
-    return polarity + sign(polarity) * oldP
+def evalVerb(polarity, oldP):
+    return sign(polarity) * oldP
 
 
-
-                                    #Evaluation of Whole Tree
+#Function to evaluate  the tree
 def evalTree(nodes, data, node):
     if node in data:
         return data[node].polarity
     
     else:
         temp=nodes[node]
-        polarity,countP=0,0
-        
-        if temp[-1] in data:
-            for i in temp:
-                polarity+=data[i].polarity
-                if data[i].polarity !=0:
-                    countP+=1
-            if countP!=0:
-                polarity/=countP
-        
-        #Evaluation for Dual Case
-        elif temp[0] in data:
-            n = len(temp)
-            for i in temp[0:n-1]:
-                polarity+=data[i].polarity
-                if data[i].polarity !=0:
-                    countP+=1
-            if countP!=0:
-                polarity/=countP
-                
-            x,y=temp[0],temp[-1]
-            oldP = evalTree(nodes, data, y)
-            if data[x].tag=='ADV':
-                return evalADV(polarity , oldP)
-
-            elif data[x].tag=='VER':
-                return evalVERB(polarity, oldP)
-
-            else:
-                return (polarity+oldP)/2
-    
+        polarity,x,n=0,temp[0],len(temp)
+        if n==1:
+            return evalTree(nodes, data, temp[0])
         else:
-            for i in temp:
-                x=evalTree(nodes, data, i)
-                polarity+=x
-                if x!=0:
-                    countP+=1
-            if countP!=0:
-                polarity/=countP
-    return polarity
+            if temp[-1] in data:
+                return calculate(data, temp)
+            else:
+                polarity = calculate(data, temp[0:n-1])
+                oldP = evalTree(nodes, data, temp[-1])
+                if data[x].tag=='ADV':
+                    return evalAdv(polarity, oldP)
+                elif data[x].tag=='VERB':
+                    print(polarity)
+                    return evalVerb(polarity, oldP)
+                else:
+                    if polarity==0:
+                        return oldP
+                    elif oldP == 0:
+                        return polarity
+                return (polarity+oldP)/2
 
-#Tree Generation
+
+#Fucntion to generate tree
 def generateTree(words):
     n=len(words)
     nodes={1:[2]}
     data={}
     nodes[2]=[3]
     data[3],prev,crNode,countN=words[0],words[0],2,3
-
     for node in words[1:n]:
         if prev.tag==node.tag:
             countN+=1
             nodes[crNode].append(countN)
             data[countN]=node
 
-        elif node.tag=='CON':
+        elif node.tag=='CONJ':
             nodes[1].append(countN+1)
             nodes[countN+1]=[countN+2]
             data[countN+2]=node
@@ -102,5 +91,5 @@ def generateTree(words):
             countN+=1
             nodes[crNode].append(countN)
             data[countN]=node
-        
-    print(evalTree(nodes, data, 1))
+            
+    return(evalTree(nodes, data, 1))
