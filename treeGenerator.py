@@ -4,6 +4,14 @@ def sign(p):
     if p>=0:
         return 1
     return -1
+
+def nonzero(lst):
+    nonzeros=0
+    for value in lst:
+        if value !=0:
+            nonzeros+=1
+    return nonzeros
+
     
 def calculate(data, lst):
     polarity,count=0,0
@@ -44,9 +52,20 @@ def evalTree(nodes, data, node):
         polarity,x,n=0,temp[0],len(temp)
         if n==1:
             return evalTree(nodes, data, temp[0])
+        
         else:
-            if temp[-1] in data:
+            if x not in data:
+                newlist=[]
+                for nd in temp:
+                    newlist.append(evalTree(nodes, data, nd))
+                if(sum(newlist)==0):
+                    return 0
+                else:
+                    return sum(newlist)/nonzero(newlist)
+
+            elif temp[-1] in data:
                 return calculate(data, temp)
+            
             else:
                 polarity = calculate(data, temp[0:n-1])
                 oldP = evalTree(nodes, data, temp[-1])
@@ -77,6 +96,7 @@ def generateTree(words):
             data[countN]=node
 
         elif node.tag=='CONJ':
+            prev=node
             nodes[1].append(countN+1)
             nodes[countN+1]=[countN+2]
             data[countN+2]=node
@@ -84,6 +104,7 @@ def generateTree(words):
             countN+=2
             
         else:
+            prev=node
             countN+=1
             nodes[crNode].append(countN)
             crNode=countN
