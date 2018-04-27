@@ -26,7 +26,7 @@ $ python -m pip install nltk
 $ python
 $ nltk.download()
 ```
-This will open a GUY, go to ALL packages and select 'averaged_perceptron','punkt', 'universal_tagset' and download.
+This will open a GUI, go to ALL packages and select 'averaged_perceptron','punkt', 'universal_tagset' and download.
 
 4. Install openpyxl
 ```
