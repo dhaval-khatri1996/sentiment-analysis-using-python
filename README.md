@@ -1,4 +1,4 @@
-#Vichaar
+# Vichaar
 It is a tool to analyze sentiments from english text. This tool is efficient in calculating the sentiments and accuracy and precision is very good.
 
 ### Requirements
