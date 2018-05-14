@@ -1,5 +1,7 @@
 import nltk
 import tkinter
+import re
+import decimal
 
 from treeGenerator import generateTree
 from createDictionary import getDataset
@@ -8,17 +10,11 @@ import word
 
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-def handlePunctuation(sentence):
-    return (sentence.replace(",", " ,").
-            replace(".", " .").
-            replace("!"," !").
-            replace("?"," ?").
-            replace(":"," ").
-            replace(";"," ").
-            replace("/"," ")).lower().split()
-
-#Get the list of words and their polarity   
-
+#add space between word and special character
+def specialCharacter(sentence):
+    sentence = re.sub('(?<=\w)([!?,.:;/\\<>"])', r' \1', sentence)
+    return sentence.lower().split()
+ 
 def generateResults(input,message):
     result = "Rating : "
     count = 1
@@ -30,11 +26,10 @@ def generateResults(input,message):
     
     for sentence in sentences:
         #Split the sentence into word
-        wordList = nltk.pos_tag(handlePunctuation(sentence),tagset='universal' )
+        wordList = nltk.pos_tag(specialCharacter(sentence),tagset='universal' )
         words=[]
     
         for i  in wordList:
-            print(i)
             if ( i[0] in wordDataset):
                 words.append(word.Word(i[0],wordDataset[i[0]],i[1]))
             else:
@@ -44,20 +39,21 @@ def generateResults(input,message):
             ans=10
         elif(ans<-10):
             ans=-10
-        result += "\nSentence{} = {}".format(count , ans )
+        result += "\nSentence{} = {}".format(count , round(ans,2) )
         count+=1
     
     message.configure(text=result)
 
+#Get the list of words and their polarity  
 wordDataset = getDataset()
 
-window =tkinter.Tk(className = 'Vichar')
-window.title("Vichar")
+window =tkinter.Tk(className = 'Vichaar')
+window.title("Vichaar")
 window.geometry('800x500')
 var = tkinter.StringVar()
 label1 = tkinter.Message( window, text="Enter the sentence to be rated :",width=200,relief=tkinter.RAISED )
 label1.place(x=5,y=3)
-rating = tkinter.Message( window, text="Rating : ",width=100)
+rating = tkinter.Message( window, text="Rating : ",width=200)
 rating.place(x=0,y=55)
 sentenceInputHolder = tkinter.Text(window,width=70,height=3)
 sentenceInputHolder.place(x=200,y=2)

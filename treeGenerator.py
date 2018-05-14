@@ -72,7 +72,6 @@ def evalTree(nodes, data, node):
                 if data[x].tag=='ADV':
                     return evalAdv(polarity, oldP)
                 elif data[x].tag=='VERB':
-                    print(polarity)
                     return evalVerb(polarity, oldP)
                 else:
                     if polarity==0:
