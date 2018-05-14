@@ -2,7 +2,7 @@
 It is a tool to analyze sentiments from english text. This tool is efficient in calculating the sentiments and accuracy and precision is very good.
 
 ### Requirements
-1. Python 3.x.x, if you don't have python install it from it's weboste https://www.python.org/downloads/.
+1. Python 3.x.x, if you don't have python install it from it's website https://www.python.org/downloads/.
 2. Install git if you don't have it already.
 3. If you don't have pip in your python copy this code https://bootstrap.pypa.io/get-pip.py and run into your system.
 
