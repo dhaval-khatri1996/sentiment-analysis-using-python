@@ -49,5 +49,6 @@ for j in range(1 , sheet.max_row+1):
     sheet.cell(row=j, column=3, value= 0 if avg<=0 else 1)
     if((polarity==1 and avg>0)or (polarity==0 and avg<=0)):
         correctCount +=1
-print(correctCount)
+print("Out of {}, {} reviews were rated correctly \n {} accuracy"
+        .format(sheet.max_row+1,correctCount, round((correctCount/(sheet.max_row+1))*100,2)))
 wb.save("dumy1.xlsx")
